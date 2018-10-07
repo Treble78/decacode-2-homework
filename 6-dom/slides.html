@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Slider</title>
+  </head>
+  <style>
+
+      html, body{
+    margin: 0;
+    padding: 0;
+
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+
+    min-height: 100%;
+    height: 100%;
+    max-height: 100%;
+    }
+
+    .slider-area {
+            
+        left:25%;
+        top: 25%;
+        width:50%;
+        height:50%;
+        background-color: rgb(168, 192, 184);
+        box-sizing: border-box;
+        position: relative;
+        border-width: 2px;
+        opacity:0;
+        display:flex;
+        align-items: center;
+        justify-content:center;
+        transition: opacity 0.5s;
+        
+    }
+
+    .slider-area.show {
+            
+            opacity:0.3;
+            transition: opacity 2s;
+        }
+
+
+
+    .changemyslide {
+        background-color: grey;
+        border: none;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        position: absolute;
+        border-radius: 12px;
+        height:10%;
+        color:pink;
+        font-weight:bold;
+        opacity:0.5;
+    }
+
+    .changemyslide.right{
+
+        margin-left: 1%;
+
+    }
+    .changemyslide.left{
+
+        margin-right: 1%;
+
+    }
+
+    .changemyslide.top{
+
+        margin-bottom: 1%;
+
+    }
+
+    .paginator {
+        position: absolute;
+        margin-top: 1%;
+        display: inline-block;
+        font-weight:bold;
+
+    }
+
+    .paginator a {
+
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        margin-left:1%;
+
+    }
+
+    .paginator a.active {
+
+        background-color: grey;
+        color: pink;
+        padding: 8px 16px;
+        border-radius: 5px;
+        margin-left:1%;
+
+
+    }
+
+    .paginator a:hover {background-color: grey;cursor: pointer;}
+    button:hover {opacity:0.7;cursor: pointer;}
+
+
+
+    .slide-text {
+
+        z-index:600;
+        color:rgb(15, 15, 13);
+        opacity:1;
+    }
+  
+  
+  </style>
+
+
+
+  <body style="background-image:url('https://static1.squarespace.com/static/52b7145ae4b0af23bf047e39/593538bc59cc687cc7976161/59353954f7e0ab04a736e73a/1496660320760/Brick%2BWall%2B%28Charcoal%29.jpg?format=2500w')"data-slides="1, 2, 3, 4, 5, 6, 7, 8">
+    <script type="text/javascript">
+      
+
+
+      (() => {
+
+        function controlAdaptiveInterface () {
+
+            let sn = $sliderArea.getBoundingClientRect();
+
+            $nextSlidebutton.style.width = $nextSlidebutton.offsetHeight + 'px';
+            $prevSlidebutton.style.width = $prevSlidebutton.offsetHeight + 'px';
+            $autoSlidebutton.style.width = $autoSlidebutton.offsetHeight + 'px';
+
+            $nextSlidebutton.style.left = sn.right + 'px';
+            $prevSlidebutton.style.right = sn.right + 'px';
+            $autoSlidebutton.style.bottom = sn.bottom + 'px';
+
+            $nextSlidebutton.style.top = sn.height - 0.5*$nextSlidebutton.offsetHeight + 'px';
+            $prevSlidebutton.style.top = sn.height - 0.5*$prevSlidebutton.offsetHeight + 'px';
+            $autoSlidebutton.style.left = sn.left + 0.5*sn.width - 0.5*$autoSlidebutton.offsetWidth + 'px';
+
+            $nextSlidebutton.style.fontSize = $nextSlidebutton.offsetHeight/5 + 'px';
+            $prevSlidebutton.style.fontSize = $prevSlidebutton.offsetHeight/5 + 'px';
+            $autoSlidebutton.style.fontSize = $autoSlidebutton.offsetHeight/5 + 'px';
+
+            $paginator.style.top = sn.bottom + 'px';
+            $paginator.style.left = sn.left + 0.5*sn.width - 0.5*$paginator.offsetWidth + 'px';
+            $paginator.style.fontSize = $nextSlidebutton.offsetHeight/5 + 'px';
+
+            $slideText.style.fontSize = (sn.height * sn.width)/926 + 'px';
+        }
+
+        function Animation (){
+
+            $sliderArea.classList.remove('show');
+            setTimeout(()=>$sliderArea.classList.add('show'),500);
+            
+        }
+
+        function previousSlide () {
+
+            setTimeout(()=>{
+
+                $mySlidesData.findIndex((el)=>el == $slideText.innerText) < 1 ?  $slideText.innerText = $mySlidesData[$mySlidesData.length-1] : $slideText.innerText -= 1;
+                selectActivePaginator ();
+            },500);
+            
+            
+            Animation();
+        }
+
+        function nextSlide () {
+
+            setTimeout(()=>{
+
+                $mySlidesData.findIndex((el)=>el == $slideText.innerText) > ($mySlidesData.length-2) ? $slideText.innerText = $mySlidesData[0] : $slideText.innerText = parseInt($slideText.innerText) + 1;
+                $mySlidesData.findIndex((el)=>el == $slideText.innerText) < 0 ? $slideText.innerText = $mySlidesData[0] : false;
+                selectActivePaginator ();
+
+            },500);
+            
+            Animation();
+        }
+
+        function autoSlide(){
+
+            $autoSlidebutton.innerText == 'Auto' ? $autoSlidebutton.innerText = 'Stop' : $autoSlidebutton.innerText = 'Auto';
+            
+            var t = setInterval(function(){
+                nextSlide();
+                Animation();
+                if ($autoSlidebutton.innerText == 'Auto') {
+                    clearInterval(t);
+                }
+            }, 4000);
+
+            
+            
+        }
+
+        function selectActivePaginator () {
+
+            const $paginators = document.querySelectorAll('.pagination-item');
+            $paginators.forEach((el)=> {el.classList.remove('active');el.innerText == $slideText.innerText ? el.classList.add('active'):false});
+            
+        }
+        
+        //array of slides
+        const $body = document.querySelector('body');
+        const $mySlidesData = $body.dataset.slides.split(',').map(el=>parseInt(el));
+
+        //slider-area
+        const $sliderArea = document.createElement('div');
+        const $slideText = document.createElement('div');
+        $sliderArea.classList.add('slider-area','show');
+        $slideText.classList.add('slide-text');
+        $slideText.innerText = '?';
+        $body.append($sliderArea);
+        $sliderArea.append($slideText);
+        
+        //prev-next-auto buttons
+        const $prevSlidebutton = document.createElement('button');
+        const $nextSlidebutton = document.createElement('button');
+        const $autoSlidebutton = document.createElement('button');
+
+        $prevSlidebutton.classList.add('changemyslide','left');
+        $nextSlidebutton.classList.add('changemyslide','right');
+        $autoSlidebutton.classList.add('changemyslide','top');
+
+        $prevSlidebutton.innerText = 'Back';
+        $nextSlidebutton.innerText = 'Forth';
+        $autoSlidebutton.innerText = 'Auto';
+
+        $prevSlidebutton.addEventListener('click',previousSlide);
+        $nextSlidebutton.addEventListener('click',nextSlide);
+        $autoSlidebutton.addEventListener('click',autoSlide);
+
+        $body.append($prevSlidebutton);
+        $body.append($nextSlidebutton);
+        $body.append($autoSlidebutton);
+
+        //paginator
+        const $paginator = document.createElement('div');
+        $paginator.classList.add('paginator');
+        $mySlidesData.forEach((el)=>{
+
+            let $newEl = document.createElement('a');
+            $newEl.classList.add('pagination-item');
+            $newEl.innerText = el;
+            $newEl.addEventListener('click',(f)=> {setTimeout(()=>{
+                    $slideText.innerText = f.target.innerText;
+                    selectActivePaginator();
+                },500)
+                Animation(); 
+            });
+
+            $paginator.append($newEl);
+
+        });
+        $body.append($paginator);
+
+        controlAdaptiveInterface ();
+        window.addEventListener('resize',controlAdaptiveInterface);
+
+      })();
+    </script>
+  </body>
+</html>
