@@ -1,0 +1,29 @@
+<body>
+    <button>Search</button>
+    <input type="text">
+    <ol></pl>
+    <script>
+      (() => {
+
+          const $btn = document.querySelector('button');
+          const $input = document.querySelector('input');
+          const $ol = document.querySelector('ol');
+          
+          $btn.addEventListener('click',()=>{
+
+            while($ol.firstChild ){$ol.removeChild($ol.firstChild )}
+            let query  = $input.value;
+
+            fetch(`https://api.openbrewerydb.org/breweries?by_name=${query}`).
+            then(response=>response.json()).
+            then(pivovarni=>{
+              pivovarni.map((el) => {
+                  let li = document.createElement('li');
+                  li.innerText = el.name;
+                  $ol.append(li);
+              })
+            });
+          });
+      })();
+    </script>
+  </body>
