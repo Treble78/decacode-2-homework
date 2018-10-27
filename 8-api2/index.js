@@ -1,65 +1,39 @@
-const fs = require('fs');
-const path = require('path');
 const bodyParser = require('body-parser');
 const express = require('express');
-
-const pathToJSON = path.resolve(__dirname,'index.json');
+const db = require('./db.js');
 
 const app = express();
 const port = 3000;
 
-
 app.use(bodyParser.json());
 
-
 app.get('/items',(req,res) => {
-
-    fs.readFile(pathToJSON,'utf-8',(err,content)=>{
+    db.get((json) => {
         res.setHeader('Content-Type','application/json');
-        res.send(content);
-    }); 
+        res.send(JSON.stringify(json,'',3));
+    });
 });
 
 app.post('/items',(req,res) => {
-
-    fs.readFile(pathToJSON,'utf-8',(err,content)=>{
-        const data = JSON.parse(content);
-        const newData = data.concat(req.body);
-
-        fs.writeFile(pathToJSON,JSON.stringify(newData,'',3),'utf-8',(err,result) =>{
-            res.send(req.body);
-        });
-    }); 
+    db.save(req.body,(createdItem) => {
+        res.send(createdItem);
+    });
 });
 
 app.put('/items/:id',(req,res) =>{
-
-    fs.readFile(pathToJSON,'utf-8',(err,content)=>{
-        const data = JSON.parse(content);
-        const IDExists = data.findIndex(el=>el.id == req.params.id);
-
-        if(IDExists >= 0){const updatedData = data.filter(el=>el.id !== req.params.id).concat(req.body)}
-        else{const updatedData = data}
-        
-        fs.writeFile(pathToJSON,JSON.stringify(updatedData,'',3),'utf-8',(err,result) =>{
-            res.send(JSON.stringify(updatedData,'',3));
-        });
+    db.update(req.params.id,req.body,(updatedData) =>{
+        res.setHeader('Content-Type','application/json');
+        res.send(updatedData);
     });
+    
 });
 
 app.delete('/items/:id',(req,res) =>{
 
-    fs.readFile(pathToJSON,'utf-8',(err,content)=>{
-        const data = JSON.parse(content);
-        const updatedData = data.filter(el=>el.id !== req.params.id);
-
-        fs.writeFile(pathToJSON,JSON.stringify(updatedData,'',3),'utf-8',(err,result) =>{
-            res.send(JSON.stringify(updatedData,'',3));
-        });
-    });
+    db.remove(req.params.id,(response) => {
+        res.send(response);
+    }); 
 });
-
-
 
 app.listen(port,()=>{
 
